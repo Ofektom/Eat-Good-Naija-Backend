@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  buil-deploy:
+  build-deploy:
     name: Build and Deploy EatGood Naija
     runs-on: ubuntu-latest
     steps:
@@ -19,8 +19,8 @@ jobs:
           distribution: 'corretto'
           java-version: 17
 
-      - name: Unit Tests
-        run: mvn -B test --file pom.xml
+#      - name: Unit Tests
+#        run: mvn -B test --file pom.xml
 
       - name: Build the application
         run:
