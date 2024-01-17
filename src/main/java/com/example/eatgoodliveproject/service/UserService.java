@@ -7,4 +7,6 @@ import com.example.eatgoodliveproject.model.Users;
 
 public interface UserService {
     Users saveAdmin(SignupDto signupDto);
+
+    Users saveUser(SignupDto signupDto);
 }
