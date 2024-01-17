@@ -1,0 +1,31 @@
+version: "3"
+services:
+  app:
+    build: ./
+    container_name: Eat-Good-Live-Project
+    ports:
+      - 8081:8081
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/Eat-Good-Naija
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+    depends_on:
+      - db
+    networks:
+      - eat-good-api
+
+  db:
+    image: postgres:latest
+    container_name: liveprojectDB
+    ports:
+      - 5433:5433
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: Eat-Good-Naija
+    networks:
+      - eat-good-api
+
+networks:
+  eat-good-api:
+    driver: bridge
