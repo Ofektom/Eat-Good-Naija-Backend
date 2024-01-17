@@ -60,5 +60,12 @@ public class AuthController {
         return new ResponseEntity<>(signupDto1, HttpStatus.OK);
     }
 
+    @PostMapping("/customer-sign-up")
+    public ResponseEntity<SignupDto> signUpUser(@RequestBody SignupDto signupDto){
+        Users user = userService.saveUser(signupDto);
+        SignupDto signupDto1 = new ObjectMapper().convertValue(user, SignupDto.class);
+        return new ResponseEntity<>(signupDto1, HttpStatus.OK);
+    }
+
 
 }

@@ -59,4 +59,20 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setProfilePictureUrl("NA");
         return userRepository.save(user);
     }
+
+    @Override
+    public Users saveUser(SignupDto signupDto) {
+        Address address = new Address();
+        address.setDescription("Trinity Road, USA");
+        Address address1 = new Address();
+        address1.setDescription("Malingo, Jamaica");
+        Users user = new ObjectMapper().convertValue(signupDto, Users.class);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserRole(Roles.CUSTOMER);
+        user.setCity("NA");
+        user.setAddresses(List.of(address, address1));
+        user.setCountry("NA");
+        user.setProfilePictureUrl("NA");
+        return userRepository.save(user);
+    }
 }
