@@ -3,15 +3,12 @@ package com.example.eatgoodliveproject.config;
 
 import com.example.eatgoodliveproject.serviceimpl.UserServiceImpl;
 import com.example.eatgoodliveproject.utils.JwtAuthenticationFilter;
-import org.apache.catalina.filters.CorsFilter;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Configuration;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

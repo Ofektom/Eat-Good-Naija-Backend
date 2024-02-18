@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            client-id: <CLIENT-ID>
-            client-secret: <CLIENT-SECRET>
+            client-id: 995760024175-tl4qnsoi4ecechr40hkeql794jggsa0v.apps.googleusercontent.com
+            client-secret: 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
   datasource:
     username: postgres
     password: 1234
@@ -20,4 +20,10 @@ server:
 sha512:
   string: 5627dcc7bb45a7cf9ddd211168fb727a2005338c5fe1e29faa71fc542bcd59e1bf0c604d65578ba9001984bfa0f25e29a509f130db33c51916bf0ebfbb78b645
 CLIENT:
-  ID: <CLIENT-ID>
+  ID: 995760024175-tl4qnsoi4ecechr40hkeql794jggsa0v.apps.googleusercontent.com
+
+# Paysatck details
+applyforme:
+  paystack:
+    secret:
+      key: sk_test_81d036c07aaa61c966c046aa1f8e3414acce1200
