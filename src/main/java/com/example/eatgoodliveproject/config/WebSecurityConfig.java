@@ -3,12 +3,15 @@ package com.example.eatgoodliveproject.config;
 
 import com.example.eatgoodliveproject.serviceimpl.UserServiceImpl;
 import com.example.eatgoodliveproject.utils.JwtAuthenticationFilter;
+import org.apache.catalina.filters.CorsFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Configuration;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -36,7 +45,36 @@ public class WebSecurityConfig {
         this.authentication = authentication;
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
+
+//    @Bean
+//    public FilterRegistrationBean<CorsFilter> corFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.setAllowCredentials(true);
+//
+//        // Convert the array to a comma-separated string
+//        corsConfiguration.addAllowedHeader(String.join(",", "*"));
+//
+//        corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+//        corsConfiguration.setAllowedMethods(Arrays.asList("*"));
+//        corsConfiguration.setMaxAge(3600L);
+//        source.registerCorsConfiguration("/**", corsConfiguration); // Global for all paths
+//
+//        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+//        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//        return bean;
+//    }
 
 
     @Bean//bcryptPasswordEncoder is enabled for spring security hashing/salting of user's password information
@@ -68,7 +106,14 @@ public class WebSecurityConfig {
                                         "/api/v1/google/**",
                                         "/v3/api-docs.yaml",
                                         "/api/v1/login").permitAll()
-                                .requestMatchers( "/api/v1/dashboard").authenticated())
+                                .requestMatchers(
+                                        "/api/v1/dashboard",
+                                        "/api/v1/products/**",
+                                        "/api/v1/users/**",
+                                        "/api/v1/carts/**",
+                                        "/api/v1/reviews/**",
+                                        "/api/v1/orders/**",
+                                        "/api/v1/payments").permitAll())
                 .sessionManagement(sessionManagement->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

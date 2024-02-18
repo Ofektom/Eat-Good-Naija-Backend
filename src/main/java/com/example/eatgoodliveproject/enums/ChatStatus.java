@@ -1,4 +1,5 @@
 package com.example.eatgoodliveproject.enums;
 
-public class ChatStatus {
+public enum ChatStatus {
+    ONLINE, OFFLINE
 }

@@ -1,7 +1,57 @@
 package com.example.eatgoodliveproject.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import com.example.eatgoodliveproject.dto.CartDto;
+import com.example.eatgoodliveproject.dto.CartItemDto;
+import com.example.eatgoodliveproject.dto.ProductDto;
+import com.example.eatgoodliveproject.model.Cart;
+import com.example.eatgoodliveproject.service.CartService;
+import com.example.eatgoodliveproject.service.ProductService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
+@RequestMapping("/api/v1/carts")
 public class CartController {
+
+    public final CartService cartService;
+    public final ProductService productService;
+
+    public CartController(CartService cartService, ProductService productService) {
+        this.cartService = cartService;
+        this.productService = productService;
+    }
+
+    @PostMapping("/adding-to-cart/{userId}/{productId}")
+    public ResponseEntity<String> addToCart(@PathVariable Long userId, @PathVariable Long productId) {
+        return cartService.addToCart(userId, productId);
+    }
+
+    @DeleteMapping("/remove-from-cart/{productId}")
+    public ResponseEntity<?> removeFromCart(@PathVariable Long productId){
+        return cartService.removeFromCart(productId);
+    }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<List<CartDto>> getALlCart(){
+        return cartService.getCart();
+    }
+
+    @GetMapping("/cart/{cartId}")
+    public ResponseEntity<CartDto> getCart(@PathVariable Long cartId) {
+        CartDto cartItems = cartService.getCartById(cartId);
+        return ResponseEntity.ok(cartItems);
+
+    }
+
+    @GetMapping("/items/{cartId}")
+    public ResponseEntity<Map<Long, Integer>> getCartItems(@PathVariable Long cartId) {
+        Map<Long, Integer> cartItems = cartService.getCartItems(cartId);
+        return ResponseEntity.ok(cartItems);
+
+    }
 }

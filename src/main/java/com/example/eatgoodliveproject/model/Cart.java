@@ -23,15 +23,13 @@ public class Cart {
     private Long id;
 
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private Users user;
+    @Column(name = "user_name")
+    private String user;
 
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<CartItem> cartItems = new ArrayList<>();
 
 
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 }

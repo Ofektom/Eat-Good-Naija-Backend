@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 
 @Data
 @NoArgsConstructor
@@ -23,14 +25,14 @@ public class OrderItem {
     private Product product;
 
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "order_id")
     @JsonIgnore
     private Orders order;
 
 
     private Long quantity;
-    private Double orderedProductPrice;
+    private BigDecimal orderedProductPrice;
 
 
 }

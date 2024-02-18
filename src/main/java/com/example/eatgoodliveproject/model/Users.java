@@ -3,6 +3,7 @@ package com.example.eatgoodliveproject.model;
 
 
 
+import com.example.eatgoodliveproject.enums.ChatStatus;
 import com.example.eatgoodliveproject.enums.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,7 +36,6 @@ public class Users implements UserDetails {
     @JsonIgnore
     private Long id;
 
-
     private String fullName;
 
 
@@ -43,19 +43,21 @@ public class Users implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
-
     private String password;
     private String confirmPassword;
     @JsonIgnore
     private String profilePictureUrl;
-    private String countryCode;
 
+//    @Size(min = 10, max = 10, message = "Mobile Number must be exactly 10 digits long")
+//    @Pattern(regexp = "^\\d{10}$", message = "Mobile Number must contain only Numbers")
 
-
-
-    @Size(min = 10, max = 10, message = "Mobile Number must be exactly 10 digits long")
-    @Pattern(regexp = "^\\d{10}$", message = "Mobile Number must contain only Numbers")
     private String phoneNumber;
+    private boolean enabled = false;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Product> products;
 
 
     @JsonIgnore
@@ -63,33 +65,29 @@ public class Users implements UserDetails {
     @JoinTable(name = "user_address", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
     private List<Address> addresses = new ArrayList<>();
 
-
     @JsonIgnore
     private String city;
 
-
     @JsonIgnore
     private String country;
-
 
     @JsonIgnore
     @Enumerated(value = EnumType.STRING)
     private Roles userRole;
 
-
-
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonIgnore
-    private Cart cart;
-
-
-
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Orders> orders;
 
+    public Users(String fullName, String username, String phoneNumber, String password, String confirmPassword, boolean enabled, Roles userRole){
+        this.fullName = fullName;
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
+        this.enabled = enabled;
+        this.userRole = userRole;
+    }
 
 
 

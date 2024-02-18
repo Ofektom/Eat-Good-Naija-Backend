@@ -2,6 +2,7 @@ package com.example.eatgoodliveproject.utils;
 
 
 
+import com.example.eatgoodliveproject.dto.SignupDto;
 import com.example.eatgoodliveproject.enums.Roles;
 import com.example.eatgoodliveproject.model.Users;
 import com.example.eatgoodliveproject.repositories.UserRepository;
@@ -47,7 +48,7 @@ public class GoogleJwtUtils {
 
 
 
-    private final Function<String, org.example.eatgoodliveprojectpersonal.dto.SignupDto> getUserFromIdToken = (token)-> {
+    private final Function<String, SignupDto> getUserFromIdToken = (token)-> {
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new GsonFactory();
 
@@ -76,7 +77,7 @@ public class GoogleJwtUtils {
 //            String locale = (String) payload.get("locale");
 //            String familyName = (String) payload.get("family_name");
 //            String givenName = (String) payload.get("given_name");
-            return org.example.eatgoodliveprojectpersonal.dto.SignupDto
+            return SignupDto
                     .builder()
                     .username(email)
                     .fullName(name)
@@ -89,7 +90,7 @@ public class GoogleJwtUtils {
     };
 
 
-    public Function<org.example.eatgoodliveprojectpersonal.dto.SignupDto, String> saveOauthUser = userDto -> {
+    public Function<SignupDto, String> saveOauthUser = userDto -> {
         if (userRepository.existsByUsername(userDto.getUsername())){
             UserDetails userDetails = userService.loadUserByUsername(userDto.getUsername());
             return utils.createJwt.apply(userDetails);
@@ -105,7 +106,7 @@ public class GoogleJwtUtils {
 
 
     public String googleOauthUserJWT(String token){
-        org.example.eatgoodliveprojectpersonal.dto.SignupDto user =  getUserFromIdToken.apply(token);
+        SignupDto user =  getUserFromIdToken.apply(token);
         return saveOauthUser.apply(user);
     }
 }

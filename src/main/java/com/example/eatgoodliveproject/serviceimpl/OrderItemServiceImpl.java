@@ -1,4 +1,0 @@
-package com.example.eatgoodliveproject.serviceimpl;
-
-public class OrderItemServiceImpl {
-}

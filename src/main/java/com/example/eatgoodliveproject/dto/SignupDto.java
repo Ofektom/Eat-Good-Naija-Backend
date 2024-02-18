@@ -1,4 +1,4 @@
-package org.example.eatgoodliveprojectpersonal.dto;
+package com.example.eatgoodliveproject.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class SignupDto {
     private String fullName;
     private String username;
-    private String countryCode;
     private String phoneNumber;
     private String password;
     private String confirmPassword;
