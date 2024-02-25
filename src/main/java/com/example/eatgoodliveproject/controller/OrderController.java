@@ -36,6 +36,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.placeOrder(cartId, userId));
     }
 
+    @PostMapping (value = "/verifyPayment")
+    public ResponseEntity<?> confirmOrder(@RequestParam String paymentReference, @RequestParam Long orderId) throws RuntimeException{
+        return new ResponseEntity<>(orderService.verifyPaymentAndConfirmOrder(paymentReference, orderId), HttpStatus.OK);
+    }
+
 
     // Endpoint to view all orders
     @GetMapping("/view-all-orders")

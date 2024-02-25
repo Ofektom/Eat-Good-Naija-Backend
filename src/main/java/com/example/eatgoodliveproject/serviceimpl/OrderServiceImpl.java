@@ -1,16 +1,14 @@
 package com.example.eatgoodliveproject.serviceimpl;
 
-import com.example.eatgoodliveproject.dto.OrderDto;
-import com.example.eatgoodliveproject.dto.OrderItemDto;
-import com.example.eatgoodliveproject.dto.OrderResponse;
-import com.example.eatgoodliveproject.dto.TrackingDto;
-import com.example.eatgoodliveproject.enums.PaymentMethod;
+import com.example.eatgoodliveproject.dto.*;
+import com.example.eatgoodliveproject.enums.OrderStatus;
 import com.example.eatgoodliveproject.enums.ShippingMethod;
 import com.example.eatgoodliveproject.exception.ResourceNotFoundException;
 import com.example.eatgoodliveproject.model.*;
 import com.example.eatgoodliveproject.model.PaymentPaystack;
 import com.example.eatgoodliveproject.repositories.*;
 import com.example.eatgoodliveproject.service.*;
+import com.example.eatgoodliveproject.utils.UniquePaymentIdGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
         this.productService = productService;
     }
 
+    @Transactional
     @Override
     public OrderDto placeOrder(Long cartId, Long userId) {
         Users user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
@@ -59,14 +59,9 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderDate(new Date());
             order.setTotalPrice(cart.getTotalPrice().add(cart.getTotalPrice().multiply(BigDecimal.valueOf(0.12))));
             order.setShippingMethod(ShippingMethod.AIR);
-
-            PaymentPaystack payment = new PaymentPaystack();
-            payment.setAmount(BigDecimal.ZERO);
-            payment.setChannel("NA");
-            payment.setCurrency("");
-            payment.setUser(user);
-
-            order.setPayment(payment);
+            order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
+            order.setOrderVerification("Order" + UniquePaymentIdGenerator.generateId());
+            order.setPaymentSuccessful(false);
             order.setReceived(true);
             Orders savedOrder = orderRepository.save(order);
 
@@ -94,8 +89,59 @@ public class OrderServiceImpl implements OrderService {
             orderDto.setInTransit(savedOrder.isInTransit());
             orderDto.setDelivered(savedOrder.isDelivered());
 
-
             return orderDto;
+    }
+
+    @Transactional
+    @Override
+    public OrderResponseDto verifyPaymentAndConfirmOrder(String paymentReference, Long orderId) throws RuntimeException {
+        // Retrieve the payment reference
+        PaymentPaystack paymentPaystack = paymentRepository.findByReference(paymentReference)
+                .orElseThrow(() -> new RuntimeException("Payment Reference cannot be retrieved " + paymentReference));
+
+
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order has never been initiated"));
+
+        // Check if the booking is already confirmed
+        if (OrderStatus.PAYMENT_CONFIRMED.equals(order.getOrderStatus())) {
+            throw new RuntimeException("Order is already confirmed");
+        }
+
+        if (paymentPaystack.getPaymentVerification() == null &&
+                !paymentPaystack.getGatewayResponse().equalsIgnoreCase("successful")){
+            throw new RuntimeException("Invalid Payment Verification");
+        }
+
+
+
+        // Update order status to PAYMENT_CONFIRMED
+        order.setPaymentSuccessful(true);
+        order.setOrderStatus(OrderStatus.PAYMENT_CONFIRMED);
+        orderRepository.save(order);
+
+
+        return OrderResponseDto.builder()
+                .orderId(order.getId())
+                .orderListSize(order.getOrderItems().size())
+                .paymentMethod(paymentPaystack.getChannel())
+                .productNames(order.getOrderItems()
+                        .stream().map((item) ->(item.getProduct().getName()))
+                        .collect(Collectors.toList()))
+                .orderItemPrices(order.getOrderItems()
+                        .stream()
+                        .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .collect(Collectors.toList()))
+                .totalPrice(order.getOrderItems()
+                        .stream()
+                        .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .tax(order.getTotalPrice().subtract(order.getOrderItems()
+                        .stream()
+                        .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)))
+                .grandTotal(order.getTotalPrice())
+                .build();
     }
 
     @Override

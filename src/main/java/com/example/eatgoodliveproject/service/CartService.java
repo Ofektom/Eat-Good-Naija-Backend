@@ -20,6 +20,4 @@ public interface CartService {
     CartDto getCartById(Long cartId);
 
     ResponseEntity<List<CartDto>> getCart();
-
-    CartDto addProductToCart(Long userId, Long productId);
 }

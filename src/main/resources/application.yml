@@ -26,4 +26,4 @@ CLIENT:
 applyforme:
   paystack:
     secret:
-      key: sk_test_81d036c07aaa61c966c046aa1f8e3414acce1200
+      key: sk_test_32fe9c0df386cf465a47ea88dfa2eef29674a7f1

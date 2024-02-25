@@ -10,8 +10,6 @@ import com.example.eatgoodliveproject.model.VerificationToken;
 import com.example.eatgoodliveproject.serviceimpl.EmailSenderService;
 import com.example.eatgoodliveproject.serviceimpl.UserServiceImpl;
 import com.example.eatgoodliveproject.utils.GoogleJwtUtils;
-import com.example.eatgoodliveproject.utils.JwtUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +17,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,20 +29,15 @@ import java.util.UUID;
 public class AuthController {
 
     private UserServiceImpl userService;
-    private JwtUtils jwtUtils;
     private GoogleJwtUtils googleJwtUtils;
-    private PasswordEncoder passwordEncoder;
     private ApplicationEventPublisher publisher;
     private EmailSenderService emailSenderService;
 
 
     @Autowired
-    public AuthController(UserServiceImpl userService, JwtUtils jwtUtils, GoogleJwtUtils googleJwtUtils,
-                          PasswordEncoder passwordEncoder, ApplicationEventPublisher publisher,EmailSenderService emailSenderService) {
+    public AuthController(UserServiceImpl userService, GoogleJwtUtils googleJwtUtils, ApplicationEventPublisher publisher,EmailSenderService emailSenderService) {
         this.userService = userService;
-        this.jwtUtils = jwtUtils;
         this.googleJwtUtils = googleJwtUtils;
-        this.passwordEncoder = passwordEncoder;
         this.publisher = publisher;
         this.emailSenderService = emailSenderService;
     }
@@ -68,14 +57,14 @@ public class AuthController {
     @PostMapping("/vendor-sign-up")
     public ResponseEntity<String> saveUpAdmin(@RequestBody SignupDto signupDto, final HttpServletRequest request){
         Users user = userService.saveAdmin(signupDto);
-        publisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(request)));
+        publisher.publishEvent(new RegistrationCompleteEvent(user,emailSenderService.applicationUrl(request)));
         return new ResponseEntity<>("Signup successful, go to your mail to verify your account", HttpStatus.OK);
     }
 
     @PostMapping("/customer-sign-up")
     public ResponseEntity<String> signUpUser(@RequestBody SignupDto signupDto, final HttpServletRequest request){
         Users user = userService.saveUser(signupDto);
-        publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl(request)));
+        publisher.publishEvent(new RegistrationCompleteEvent(user, emailSenderService.applicationUrl(request)));
         return new ResponseEntity<>("Signup successful, go to your mail to verify your account", HttpStatus.OK);
     }
 
@@ -94,7 +83,7 @@ public class AuthController {
     public String resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
         VerificationToken verificationToken = userService.generateNewVerificationToken(oldToken);
         Users user = verificationToken.getUser();
-        resendVerificationTokenMail(user, applicationUrl(request),verificationToken);
+        resendVerificationTokenMail(user, emailSenderService.applicationUrl(request),verificationToken);
         return "Verification link has been sent to your email";
     }
 
@@ -114,6 +103,23 @@ public class AuthController {
         return new ResponseEntity<>("Bad User", HttpStatus.BAD_REQUEST);
     }
 
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> forgotPassword(@RequestBody PasswordDto passwordDto, HttpServletRequest request) throws RuntimeException {
+        Users user = userService.findUserByEmail(passwordDto.getEmail());
+        String url = "";
+        if(user != null){
+            String token =  userService.generateRandomNumber(6);
+            userService.createPasswordResetTokenForUser(user, token);
+            try {
+                url = emailSenderService.forgetPasswordResetTokenMail(user, emailSenderService.applicationUrl(request), token);
+            }catch (Exception e){
+                throw new RuntimeException("Error sending mail");
+            }
+            return new ResponseEntity<>("Go to Email to reset Password " + url, HttpStatus.OK);
+        }
+        throw new RuntimeException("User with email " + passwordDto.getEmail() + "not found");
+    }
+
     @PostMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody PasswordResetDto passwordResetDto, HttpServletRequest request){
         Users user = userService.findUserByEmail(passwordResetDto.getEmail());
@@ -121,10 +127,10 @@ public class AuthController {
         if (user != null){
             String token = UUID.randomUUID().toString();
             userService.createPasswordResetTokenForUser(user, token);
-            url = passwordResetTokenMail(user, applicationUrl(request), token);
+            url =emailSenderService.passwordResetTokenMail(user.getUsername(), emailSenderService.applicationUrl(request), token);
 
         }
-        return new ResponseEntity<>("go to your mail to reset your password", HttpStatus.OK);
+        return new ResponseEntity<>("go to your mail to reset your password" + url, HttpStatus.OK);
 
     }
 
@@ -136,24 +142,10 @@ public class AuthController {
             return "Invalid Old Password";
         }
 
-
         userService.changePassword(user, passwordDto.getNewPassword());
         return "Password Change Successfully";
     }
 
-    private String passwordResetTokenMail(Users user, String applicationUrl, String token) {
-        String url = applicationUrl + "/savePassword?token=" + token;
-
-        emailSenderService.sendSimpleEmail(
-                user.getUsername(),
-                "Click the link to reset your password: " + url,
-                "Password Reset sent"
-        );
-
-        log.info("Click the link to Reset your password: {}", url);
-        return url;
-
-    }
 
     @PostMapping("/savePassword")
     public ResponseEntity<String> savePassword(@RequestParam("token") String token, @RequestBody PasswordDto passwordDto){
@@ -169,11 +161,5 @@ public class AuthController {
             return new ResponseEntity<>("Invalid Token", HttpStatus.BAD_REQUEST);
         }
     }
-
-    private String applicationUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + "/api/v1/auth" + request.getContextPath();
-    }
-
-
 
 }

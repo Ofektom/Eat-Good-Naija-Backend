@@ -1,9 +1,6 @@
 package com.example.eatgoodliveproject.service;
 
-import com.example.eatgoodliveproject.dto.OrderDto;
-import com.example.eatgoodliveproject.dto.OrderResponse;
-import com.example.eatgoodliveproject.dto.PaymentDto;
-import com.example.eatgoodliveproject.dto.TrackingDto;
+import com.example.eatgoodliveproject.dto.*;
 import com.example.eatgoodliveproject.enums.PaymentMethod;
 import com.example.eatgoodliveproject.enums.TrackingStatus;
 import com.example.eatgoodliveproject.model.Orders;
@@ -14,7 +11,7 @@ import java.util.List;
 
 public interface OrderService {
     OrderDto placeOrder(Long cartId, Long userId);
-
+    OrderResponseDto verifyPaymentAndConfirmOrder(String paymentReference, Long orderId) throws RuntimeException;
     List<OrderDto> getAllOrders();
     List<OrderDto> getOrdersByUserId(Long userId);
     OrderDto getOrder(Long userId, Long orderId);

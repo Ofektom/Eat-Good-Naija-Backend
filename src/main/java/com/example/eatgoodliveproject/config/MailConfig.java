@@ -15,8 +15,8 @@ public class MailConfig {
         // Set mail server properties
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
-        mailSender.setUsername("okpohot@gmail.com");
-        mailSender.setPassword("yzfr tcsg lhzr pwrq");
+        mailSender.setUsername("javaspringemailclient@gmail.com");
+        mailSender.setPassword("zvoqkgamnryyupuu");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

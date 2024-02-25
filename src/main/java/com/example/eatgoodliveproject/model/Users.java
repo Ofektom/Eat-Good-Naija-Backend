@@ -7,9 +7,7 @@ import com.example.eatgoodliveproject.enums.ChatStatus;
 import com.example.eatgoodliveproject.enums.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,29 +34,37 @@ public class Users implements UserDetails {
     @JsonIgnore
     private Long id;
 
+    @Size(min = 4, message = "Name must be at least 4 characters")
     private String fullName;
 
-
-    @Email
+    @Email(message = "Please enter a valid email address")
+    @NotEmpty(message = "Email cannot be empty")
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,}$", message = "Password must be at least 8 characters and include one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
+
+    @Transient
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=]).{8,}$", message = "Confirm password must match the password")
     private String confirmPassword;
+
     @JsonIgnore
     private String profilePictureUrl;
 
 //    @Size(min = 10, max = 10, message = "Mobile Number must be exactly 10 digits long")
 //    @Pattern(regexp = "^\\d{10}$", message = "Mobile Number must contain only Numbers")
 
+    @NotNull(message = "Phone number cannot be null")
     private String phoneNumber;
+
+    @JsonIgnore
     private boolean enabled = false;
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Product> products;
-
 
     @JsonIgnore
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -71,7 +77,6 @@ public class Users implements UserDetails {
     @JsonIgnore
     private String country;
 
-    @JsonIgnore
     @Enumerated(value = EnumType.STRING)
     private Roles userRole;
 
@@ -124,4 +129,10 @@ public class Users implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+//    @JsonIgnore
+//    @AssertTrue(message = "Passwords do not match")
+//    public boolean isPasswordMatching(){
+//        return password != null && password.equals(confirmPassword);
+//    }
 }

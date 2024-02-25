@@ -1,9 +1,6 @@
 package com.example.eatgoodliveproject.controller;
 
 import com.example.eatgoodliveproject.dto.CartDto;
-import com.example.eatgoodliveproject.dto.CartItemDto;
-import com.example.eatgoodliveproject.dto.ProductDto;
-import com.example.eatgoodliveproject.model.Cart;
 import com.example.eatgoodliveproject.service.CartService;
 import com.example.eatgoodliveproject.service.ProductService;
 import org.springframework.http.ResponseEntity;

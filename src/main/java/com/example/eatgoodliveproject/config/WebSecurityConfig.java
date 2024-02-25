@@ -110,7 +110,7 @@ public class WebSecurityConfig {
                                         "/api/v1/carts/**",
                                         "/api/v1/reviews/**",
                                         "/api/v1/orders/**",
-                                        "/api/v1/payments").permitAll())
+                                        "/api/v1/paystack/**").permitAll())
                 .sessionManagement(sessionManagement->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

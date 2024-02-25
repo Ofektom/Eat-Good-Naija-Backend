@@ -46,59 +46,6 @@ public class CartServiceImpl implements CartService {
         this.userRepository = userRepository;
     }
 
-
-    @Override
-    public CartDto addProductToCart(Long cartId, Long productId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart is empty" + cartId));
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-
-        // Check if the product is already in the cart
-        CartItem existingItem = findCartItemInCart(cart, product);
-
-        if (existingItem != null) {
-            // If the product is already in the cart, increment the quantity
-            existingItem.setQuantity(existingItem.getQuantity() + 1L);
-            existingItem.setProductPrice(existingItem.getProductPrice());
-            cart.getCartItems().add(existingItem);
-            log.info("Price of old cart item: " + cart.getTotalPrice());
-        } else {
-            // If the product is not in the cart, create a new CartItem
-            CartItem newCartItem = new CartItem();
-            newCartItem.setProduct(product);
-            newCartItem.setCart(cart);
-            newCartItem.setQuantity(1L);
-            newCartItem.setCart(cart);
-            newCartItem.setProductPrice(product.getPrice());
-
-            cartItemRepository.save(newCartItem);
-            cart.getCartItems().add(newCartItem);
-            log.info("Price of new Product: " + product.getPrice() + ". Price of cartItem" + cart.getTotalPrice());
-        }
-
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        for (CartItem cartItem : cart.getCartItems()) {
-            BigDecimal itemPrice = cartItem.getProductPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
-            totalPrice = totalPrice.add(itemPrice);
-        }
-
-        CartDto cartDTO = new CartDto();
-
-        List<ProductDto> productDTOs = cart.getCartItems()
-                .stream()
-                .map(p -> new ObjectMapper().convertValue(p.getProduct(), ProductDto.class))
-                .collect(Collectors.toList());
-        cartDTO.setProducts(productDTOs);
-        cartDTO.setTotalPrice(totalPrice);
-
-        cart.setTotalPrice(totalPrice);
-        cartRepository.save(cart);
-        return cartDTO;
-    }
-
-
     @Override
     public ResponseEntity<String> addToCart(Long userId, Long productId) {
         Users user = userRepository.findById(userId)
@@ -111,10 +58,11 @@ public class CartServiceImpl implements CartService {
             return new ResponseEntity<>("Out of stock", HttpStatus.BAD_REQUEST);
         }
 
-        Cart cart = new Cart();
-        cart.setUser(user.getUsername());
-
-
+        Cart cart = cartRepository.findByUser(user.getUsername());
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(user.getUsername());
+        }
 
         // Check if the product is already in the cart
         CartItem existingItem = findCartItemInCart(cart, product);
@@ -132,10 +80,9 @@ public class CartServiceImpl implements CartService {
             newCartItem.setQuantity(1L);
             newCartItem.setCart(cart);
             newCartItem.setProductPrice(product.getPrice());
-
             cartItemRepository.save(newCartItem);
-            cart.setTotalPrice(cart.getTotalPrice().add(newCartItem.getProductPrice()));
-//            cart.setTotalPrice(cart.getTotalPrice()==null?newCartItem.getProductPrice():cart.getTotalPrice().add(newCartItem.getProductPrice()));
+
+            cart.setTotalPrice(cart.getTotalPrice()==null ? newCartItem.getProductPrice() : cart.getTotalPrice().add(newCartItem.getProductPrice()));
             cart.getCartItems().add(newCartItem);
             log.info("Price of new Product: " + product.getPrice() + ". Price of cartItem" + cart.getTotalPrice());
         }
@@ -223,7 +170,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDto getCartById(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart with ID: " + cartId + " not found."));
-        return new ObjectMapper().convertValue(cart, CartDto.class);
+        return CartDto.builder()
+                .id(cartId)
+                .products(cart.getCartItems().stream().map((item) -> new ObjectMapper().convertValue(item.getProduct(), ProductDto.class)).collect(Collectors.toList()))
+                .totalPrice(cart.getTotalPrice())
+                .build();
     }
 
     @Override

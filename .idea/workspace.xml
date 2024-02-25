@@ -4,16 +4,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1b5e5bf-6095-4e7c-8acd-856aaf9a8c4e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/example/eatgoodliveproject/controller/AuthControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="e1b5e5bf-6095-4e7c-8acd-856aaf9a8c4e" name="Changes" comment="New Changes">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/OrderResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/enums/OrderStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/utils/UniquePaymentIdGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/config/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/config/MailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/config/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/config/WebSecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/CartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/CartController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/CartDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/CartDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/OrderDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/OrderDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/SignupDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/dto/SignupDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/enums/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/enums/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/enums/PaymentMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/enums/PaymentMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/Orders.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/Orders.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/PaymentPaystack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/PaymentPaystack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/model/domain/AppUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/repositories/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/repositories/OrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/repositories/PaystackPaymentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/repositories/PaystackPaymentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/CartService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/service/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/CartServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/CartServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/EmailSenderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/EmailSenderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/OrderServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject/serviceimpl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/eatgoodliveproject/EatGoodLiveProjectApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/eatgoodliveproject/EatGoodLiveProjectApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/eatgoodliveproject/controller/AuthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/eatgoodliveproject/controller/AuthControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +46,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JUnit5 Test Class" />
+        <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -47,35 +71,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "EGN-5-SignUp",
-    "last_opened_file_path": "/Users/decagon/IdeaProjects/Eat-Good-Live-Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Spring Boot.EatGoodLiveProjectApplication.executor&quot;: &quot;Run&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/decagon/IdeaProjects/Eat-Good-Naija-Backend/src/main/java/com/example/eatgoodliveproject&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/com/example/eatgoodliveproject" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="CreateTestDialog.Recents.Supers">
@@ -83,6 +110,12 @@
     </key>
     <key name="CreateTestDialog.RecentsKey">
       <recent name="com.example.eatgoodliveproject.controller" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.eatgoodliveproject.repositories" />
+      <recent name="com.example.eatgoodliveproject.enums" />
+      <recent name="com.example.eatgoodliveproject.dto" />
+      <recent name="com.example.eatgoodliveproject.config" />
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.EatGoodLiveProjectApplication">
@@ -115,6 +148,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-21.0.2-openjdk-21.0.2-3183f394aec4-74f1fbcb" />
+        <option value="jdk-21.0.2-openjdk-21.0.2-4caba194b151-322ed176" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -126,7 +167,28 @@
       <workItem from="1705325511929" duration="1772000" />
       <workItem from="1705494539609" duration="789000" />
       <workItem from="1705495594370" duration="3383000" />
+      <workItem from="1708268660266" duration="5428000" />
+      <workItem from="1708348143662" duration="49697000" />
+      <workItem from="1708632688770" duration="3817000" />
+      <workItem from="1708642081923" duration="2334000" />
     </task>
+    <task id="LOCAL-00001" summary="New Changes">
+      <option name="closed" value="true" />
+      <created>1708292672767</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1708292672768</updated>
+    </task>
+    <task id="LOCAL-00002" summary="New Changes">
+      <option name="closed" value="true" />
+      <created>1708293787276</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1708293787277</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -142,5 +204,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="New Changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="New Changes" />
   </component>
 </project>

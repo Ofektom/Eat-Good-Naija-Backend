@@ -28,6 +28,9 @@ public class PaymentPaystack {
     @JoinColumn(name = "user_id")
     private Users user;
 
+    @Column(name = "payment_verification_id")
+    private String paymentVerification;
+
     @Column(name = "reference")
     private String reference;
 
@@ -55,10 +58,6 @@ public class PaymentPaystack {
     @Column(name = "pricing_plan_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private PricingPlanType pricingPlanType = PricingPlanType.BASIC;
-
-    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Orders order;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

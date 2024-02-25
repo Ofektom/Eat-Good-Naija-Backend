@@ -1,6 +1,7 @@
 package com.example.eatgoodliveproject.model;
 
 
+import com.example.eatgoodliveproject.enums.OrderStatus;
 import com.example.eatgoodliveproject.enums.ShippingMethod;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -42,6 +43,13 @@ public class Orders {
     @CreationTimestamp
     private Date orderDate;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
+    @Column(name = "order_verification_id")
+    @JsonIgnore
+    private String orderVerification;
+
     @JsonIgnore
     @Column(name = "isReceived")
     private boolean isReceived = false;
@@ -68,9 +76,7 @@ public class Orders {
     @JsonIgnore
     private ShippingMethod shippingMethod;
 
-
-    @OneToOne
-    @JoinColumn(name = "payment_id")
     @JsonIgnore
-    private PaymentPaystack payment;
+    private boolean paymentSuccessful;
+
 }

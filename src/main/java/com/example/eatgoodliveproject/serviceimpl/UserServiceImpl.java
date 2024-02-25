@@ -26,11 +26,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
+
 import java.util.*;
-import java.util.function.Function;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -64,13 +62,23 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Address address = new Address();
         address.setDescription("NA");
         Users user = new ObjectMapper().convertValue(signupDto, Users.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setUserRole(Roles.VENDOR);
-        user.setCity("NA");
-        user.setAddresses(List.of(address));
-        user.setCountry("NA");
-        user.setProfilePictureUrl("NA");
-        return userRepository.save(user);
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Email is already taken, try Logging In or Signup with another email" );
+        }
+
+//        if (user.isPasswordMatching()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
+            user.setUserRole(Roles.VENDOR);
+            user.setCity("NA");
+            user.setAddresses(List.of(address));
+            user.setCountry("NA");
+            user.setProfilePictureUrl("NA");
+            return userRepository.save(user);
+//        } else {
+//            throw new RuntimeException("Passwords do not Match!");
+//        }
+
     }
 
     @Override
@@ -78,13 +86,23 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Address address = new Address();
         address.setDescription("NA");
         Users user = new ObjectMapper().convertValue(signupDto, Users.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setUserRole(Roles.CUSTOMER);
-        user.setCity("NA");
-        user.setAddresses(List.of(address));
-        user.setCountry("NA");
-        user.setProfilePictureUrl("NA");
-        return userRepository.save(user);
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Email is already taken, try Logging In or Signup with another email" );
+        }
+
+//        if (user.isPasswordMatching()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
+            user.setUserRole(Roles.CUSTOMER);
+            user.setCity("NA");
+            user.setAddresses(List.of(address));
+            user.setCountry("NA");
+            user.setProfilePictureUrl("NA");
+            return userRepository.save(user);
+//        } else {
+//            throw new RuntimeException("Passwords do not Match!");
+//        }
+
     }
 
     @Override
@@ -176,6 +194,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
     public Optional<Users> getUserByPasswordResetToken(String token) {
         return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    }
+
+    public String generateRandomNumber(int length) {
+        if (length <= 0) {
+            throw new IllegalArgumentException("Length must be greater than 0");
+        }
+
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int digit = random.nextInt(10); // Generates a random digit between 0 and 9
+            stringBuilder.append(digit);
+        }
+
+        return stringBuilder.toString();
     }
 
 

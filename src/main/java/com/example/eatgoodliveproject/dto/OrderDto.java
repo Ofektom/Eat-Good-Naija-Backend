@@ -1,5 +1,6 @@
 package com.example.eatgoodliveproject.dto;
 
+import com.example.eatgoodliveproject.enums.OrderStatus;
 import com.example.eatgoodliveproject.enums.ShippingMethod;
 import com.example.eatgoodliveproject.enums.TrackingStatus;
 import com.example.eatgoodliveproject.model.OrderItem;
@@ -30,6 +31,7 @@ public class OrderDto {
     private Date orderDate;
     private BigDecimal totalPrice;
     private ShippingMethod shippingMethod;
+    private OrderStatus orderStatus;
     private boolean isReceived;
     private boolean isPrepared;
     private boolean isReady;
