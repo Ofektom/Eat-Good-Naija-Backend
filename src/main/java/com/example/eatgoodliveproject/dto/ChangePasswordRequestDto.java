@@ -1,5 +1,6 @@
 package com.example.eatgoodliveproject.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetPasswordDto {
+public class ChangePasswordRequestDto {
+
+    private String oldPassword;
     private String newPassword;
-    private String newConfirmPassword;
 }

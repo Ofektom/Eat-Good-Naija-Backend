@@ -1,5 +1,8 @@
 package com.example.eatgoodliveproject.dto;
 
-public class ResetPasswordRequestDto {
+import lombok.Data;
+
+@Data
+public class PasswordResetEmailDto {
     private String email;
 }

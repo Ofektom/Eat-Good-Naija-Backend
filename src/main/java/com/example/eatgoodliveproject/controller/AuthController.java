@@ -1,9 +1,6 @@
 package com.example.eatgoodliveproject.controller;
 
-import com.example.eatgoodliveproject.dto.LoginDto;
-import com.example.eatgoodliveproject.dto.PasswordDto;
-import com.example.eatgoodliveproject.dto.PasswordResetDto;
-import com.example.eatgoodliveproject.dto.SignupDto;
+import com.example.eatgoodliveproject.dto.*;
 import com.example.eatgoodliveproject.event.RegistrationCompleteEvent;
 import com.example.eatgoodliveproject.model.Users;
 import com.example.eatgoodliveproject.model.VerificationToken;
@@ -17,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -104,7 +102,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody PasswordDto passwordDto, HttpServletRequest request) throws RuntimeException {
+    public ResponseEntity<String> forgotPassword(@RequestBody PasswordResetEmailDto passwordDto, HttpServletRequest request) throws RuntimeException {
         Users user = userService.findUserByEmail(passwordDto.getEmail());
         String url = "";
         if(user != null){
@@ -121,8 +119,8 @@ public class AuthController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetDto passwordResetDto, HttpServletRequest request){
-        Users user = userService.findUserByEmail(passwordResetDto.getEmail());
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetEmailDto passwordResetEmailDto, HttpServletRequest request){
+        Users user = userService.findUserByEmail(passwordResetEmailDto.getEmail());
         String url = "";
         if (user != null){
             String token = UUID.randomUUID().toString();
@@ -137,18 +135,18 @@ public class AuthController {
 
     @PostMapping("/changePassword")
     public String changePassword(@RequestBody PasswordDto passwordDto){
-        Users user = userService.findUserByEmail(passwordDto.getEmail());
+        Users user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())){
             return "Invalid Old Password";
         }
-
         userService.changePassword(user, passwordDto.getNewPassword());
         return "Password Change Successfully";
     }
 
 
     @PostMapping("/savePassword")
-    public ResponseEntity<String> savePassword(@RequestParam("token") String token, @RequestBody PasswordDto passwordDto){
+    public ResponseEntity<String> savePassword(@RequestParam("token") String token,
+                                               @RequestBody ResetPasswordDto passwordDto){
         String result = userService.validatePasswordResetToken(token);
         if (!result.equalsIgnoreCase("valid")){
             return new ResponseEntity<>("Invalid Token", HttpStatus.NOT_FOUND);
