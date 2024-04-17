@@ -1,9 +1,7 @@
 package com.example.eatgoodliveproject.service;
 
 
-import com.example.eatgoodliveproject.dto.LoginDto;
-import com.example.eatgoodliveproject.dto.ProfileUpdateDto;
-import com.example.eatgoodliveproject.dto.SignupDto;
+import com.example.eatgoodliveproject.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import com.example.eatgoodliveproject.model.Users;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +17,12 @@ public interface UserService {
     Users saveUser(SignupDto signupDto);
 
     ResponseEntity<String> loginUser(LoginDto loginDto);
+    void forgotPassword(PasswordResetEmailDto passwordDto, HttpServletRequest request);
+    ResponseEntity<String> resetPassword(String token, ResetPasswordDto passwordDto);
 
-    String logoutUser(Authentication authentication, HttpServletRequest request);
+//    String logoutUser(Authentication authentication, HttpServletRequest request);
+
+    String logoutUser(HttpServletRequest request);
 
     ResponseEntity<String> updateProfile(Long UserId, ProfileUpdateDto profileUpdateDto);
 }

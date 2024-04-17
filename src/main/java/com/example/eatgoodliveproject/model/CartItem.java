@@ -1,6 +1,8 @@
 package com.example.eatgoodliveproject.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +26,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private Cart cart;
 
 
@@ -34,4 +37,5 @@ public class CartItem {
 
     private Long quantity;
     private BigDecimal productPrice;
+
 }

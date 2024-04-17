@@ -39,8 +39,7 @@ public class EmailSenderService {
 
 
     public String passwordResetTokenMail(String user, String applicationUrl, String token) {
-        String url = applicationUrl + "/user/savePassword?token=" + token;
-        //gmail java email send url to user email to reset password/////////////////////////////////
+        String url = applicationUrl + "/user/savePassword/" + token;
         this.sendSimpleEmail(
                 user,
                 "Click on your Password link to reset your Password: " + url,

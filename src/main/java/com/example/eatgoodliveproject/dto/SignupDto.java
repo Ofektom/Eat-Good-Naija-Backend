@@ -16,6 +16,7 @@ public class SignupDto {
     @Email(message = "*Entry must be an email address")
     @NotEmpty(message = "*Enter your valid email address")
     private String username;
+    private String country;
     @NotNull
     @NotEmpty
     private String phoneNumber;

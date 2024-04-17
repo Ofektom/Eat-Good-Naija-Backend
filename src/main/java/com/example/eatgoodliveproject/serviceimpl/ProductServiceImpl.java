@@ -4,6 +4,7 @@ import com.example.eatgoodliveproject.dto.FavoriteProductDto;
 import com.example.eatgoodliveproject.dto.ProductDto;
 import com.example.eatgoodliveproject.enums.Category;
 import com.example.eatgoodliveproject.exception.ResourceNotFoundException;
+import com.example.eatgoodliveproject.exception.UserNotFoundException;
 import com.example.eatgoodliveproject.model.Product;
 import com.example.eatgoodliveproject.model.Users;
 import com.example.eatgoodliveproject.repositories.ProductRepository;
@@ -42,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return authentication.getName();
         }else{
-            throw new RuntimeException("No User found");
+            throw new UserNotFoundException("No User found");
         }
     }
 
@@ -56,12 +57,18 @@ public class ProductServiceImpl implements ProductService {
 
         Users user = findUserByEmail(authUser());
         Product product = new ObjectMapper().convertValue(productDto, Product.class);
+//        Product product = new Product();
         Optional<Product> product1 = productRepository.findProductByNameIgnoreCase(product.getName());
         if(product1.isPresent() ){
             return ResponseEntity.ok("Product with name " + product.getName()+ " has already been added");
         }
 
         product.setUser(user);
+//        product.setName(productDto.getName());
+//        product.setCategory(productDto.getCategory());
+//        product.setSize(productDto.getSize());
+//        product.setPrice(productDto.getPrice());
+//        product.setImageUrl(productDto.getImageUrl());
         productRepository.save(product);
         return ResponseEntity.ok(product.getName() + " added successfully");
     }
@@ -127,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
         product.get().setCategory(productDto.getCategory());
         product.get().setSize(productDto.getSize());
         product.get().setPrice(productDto.getPrice());
-        product.get().setImageUrl("Img.jpeg");
+        product.get().setImageUrl(productDto.getImageUrl());
         product.get().setUser(user);
         productRepository.save(product.get());
 

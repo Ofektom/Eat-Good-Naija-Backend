@@ -1,10 +1,9 @@
 package com.example.eatgoodliveproject.serviceimpl;
 
 
-import com.example.eatgoodliveproject.dto.LoginDto;
-import com.example.eatgoodliveproject.dto.ProfileUpdateDto;
-import com.example.eatgoodliveproject.dto.SignupDto;
+import com.example.eatgoodliveproject.dto.*;
 import com.example.eatgoodliveproject.enums.Roles;
+import com.example.eatgoodliveproject.exception.*;
 import com.example.eatgoodliveproject.model.Address;
 import com.example.eatgoodliveproject.model.PasswordResetToken;
 import com.example.eatgoodliveproject.model.Users;
@@ -29,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -38,16 +39,18 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private PasswordEncoder passwordEncoder;
     private PasswordResetTokenRepository passwordResetTokenRepository;
     private VerificationTokenRepository verificationTokenRepository;
+    private final EmailSenderService emailSenderService;
 
 
     @Autowired
     public UserServiceImpl(JwtUtils jwtUtils, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           PasswordResetTokenRepository passwordResetTokenRepository, VerificationTokenRepository verificationTokenRepository) {
+                           PasswordResetTokenRepository passwordResetTokenRepository, VerificationTokenRepository verificationTokenRepository, EmailSenderService emailSenderService) {
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.emailSenderService = emailSenderService;
     }
 
 
@@ -59,72 +62,92 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public Users saveAdmin(SignupDto signupDto) {
-        Address address = new Address();
-        address.setDescription("NA");
-        Users user = new ObjectMapper().convertValue(signupDto, Users.class);
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Email is already taken, try Logging In or Signup with another email" );
+        if (userRepository.existsByUsername(signupDto.getUsername())) {
+            throw new EmailIsTakenException("Email is already taken, try Logging In or Signup with another email" );
         }
+        Users user = new Users();
 
-//        if (user.isPasswordMatching()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
-            user.setUserRole(Roles.VENDOR);
-            user.setCity("NA");
-            user.setAddresses(List.of(address));
-            user.setCountry("NA");
-            user.setProfilePictureUrl("NA");
-            return userRepository.save(user);
-//        } else {
-//            throw new RuntimeException("Passwords do not Match!");
-//        }
-
+        if (!signupDto.getPassword().equals (signupDto.getConfirmPassword())){
+            throw new PasswordsDontMatchException("Passwords are not the same");
+        }
+        if (!validatePassword(signupDto.getPassword())) {
+            throw new PasswordsDontMatchException("Password does not meet the required criteria");
+        }
+        user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
+        user.setConfirmPassword(passwordEncoder.encode(signupDto.getConfirmPassword()));
+        user.setFullName(signupDto.getFullName());
+        user.setPhoneNumber(signupDto.getPhoneNumber());
+        user.setUsername(signupDto.getUsername());
+        user.setUserRole(Roles.VENDOR);
+        user.setCountry(signupDto.getCountry());
+        return userRepository.save(user);
     }
 
     @Override
     public Users saveUser(SignupDto signupDto) {
-        Address address = new Address();
-        address.setDescription("NA");
-        Users user = new ObjectMapper().convertValue(signupDto, Users.class);
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Email is already taken, try Logging In or Signup with another email" );
+        if (userRepository.existsByUsername(signupDto.getUsername())) {
+            throw new EmailIsTakenException("Email is already taken, try Logging In or Signup with another email" );
         }
+        Users user = new Users();
 
-//        if (user.isPasswordMatching()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
+        if (!signupDto.getPassword().equals (signupDto.getConfirmPassword())){
+            throw new PasswordsDontMatchException("Passwords are not the same");
+        }
+        if (!validatePassword(signupDto.getPassword())) {
+            throw new PasswordsDontMatchException("Password does not meet the required criteria");
+        }
+            user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
+            user.setConfirmPassword(passwordEncoder.encode(signupDto.getConfirmPassword()));
+            user.setFullName(signupDto.getFullName());
+            user.setPhoneNumber(signupDto.getPhoneNumber());
+            user.setUsername(signupDto.getUsername());
             user.setUserRole(Roles.CUSTOMER);
-            user.setCity("NA");
-            user.setAddresses(List.of(address));
-            user.setCountry("NA");
-            user.setProfilePictureUrl("NA");
+            user.setCountry(signupDto.getCountry());
             return userRepository.save(user);
-//        } else {
-//            throw new RuntimeException("Passwords do not Match!");
-//        }
+    }
 
+    public boolean validatePassword(String password){
+        String regex = "^.*(?=.{8,})(?=...*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(password);
+
+        return matcher.matches();
     }
 
     @Override
     public ResponseEntity<String> loginUser(LoginDto loginDto) {
         UserDetails user = loadUserByUsername(loginDto.getUsername());
-        if (passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            String token = jwtUtils.createJwt.apply(user);
-            return new ResponseEntity<>(token, HttpStatus.OK);
+
+        if (!user.isEnabled()) {
+            throw new UserNotVerifiedException("User is not verified, check email to Verify Registration");
         }
-        return new ResponseEntity<>("Username or Password not correct!", HttpStatus.BAD_REQUEST);
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new UserNotVerifiedException("Username and Password is Incorrect");
+        }
+
+        return ResponseEntity.ok(jwtUtils.createJwt.apply(user));
     }
 
+//    @Override
+//    public String logoutUser(Authentication authentication, HttpServletRequest request) {
+//        if (authentication != null) {
+//            SecurityContextHolder.getContext().setAuthentication(null);
+//            SecurityContextHolder.clearContext();
+//            request.getSession().invalidate();
+//            return "User logged Out Successfully";
+//        } else {
+//            return "User not authenticated";
+//        }
+//    }
+
     @Override
-    public String logoutUser(Authentication authentication, HttpServletRequest request) {
-        if (authentication != null) {
-            SecurityContextHolder.getContext().setAuthentication(null);
-            SecurityContextHolder.clearContext();
-            request.getSession().invalidate();
-            return "User logged Out Successfully";
-        } else {
-            return "User not authenticated";
-        }
+    public String logoutUser(HttpServletRequest request) {
+        SecurityContextHolder.getContext().setAuthentication(null);
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+        return "User logged out Successfully";
     }
 
 
@@ -152,12 +175,47 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return "valid";
     }
 
-    public VerificationToken generateNewVerificationToken(String oldToken) {
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(oldToken);
-        verificationToken.setToken(UUID.randomUUID().toString());
-        verificationTokenRepository.save(verificationToken);
-        return verificationToken;
+    @Override
+    public void forgotPassword(PasswordResetEmailDto passwordDto, HttpServletRequest request) {
+        Users user = findUserByEmail(passwordDto.getEmail());
+        if (user == null) {
+            throw new UserNotFoundException("User with email " + passwordDto.getEmail() + " not found");
+        }
+        String token = UUID.randomUUID().toString();
+        createPasswordResetTokenForUser(user, token);
+        emailSenderService.passwordResetTokenMail(user.getUsername(), emailSenderService.applicationUrl(request), token);
     }
+
+    private Optional<Users> getUserByPasswordReset(String token) {
+        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    }
+
+    private void changePassword(Users user, String newPassword, String newConfirmPassword) {
+
+        if (newPassword.equals(newConfirmPassword)) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setConfirmPassword(passwordEncoder.encode(newConfirmPassword));
+            userRepository.save(user);
+        } else {
+            throw new PasswordsDontMatchException("Passwords do not Match!");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> resetPassword(String token, ResetPasswordDto passwordDto) {
+        String result = validatePasswordResetToken(token);
+        if (!result.equalsIgnoreCase("valid")) {
+            throw new InvalidTokenException("Invalid Token");
+        }
+        Optional<Users> user = getUserByPasswordReset(token);
+        if (user.isPresent()) {
+            changePassword(user.get(), passwordDto.getNewPassword(), passwordDto.getNewConfirmPassword());
+            return new ResponseEntity<>("Password Reset Successful", HttpStatus.OK);
+        } else {
+            throw new InvalidTokenException("Invalid Token");
+        }
+    }
+
 
     public void createPasswordResetTokenForUser(Users user, String token) {
         PasswordResetToken passwordResetToken = new PasswordResetToken(user, token);
@@ -180,21 +238,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return "valid";
 
     }
+
+
     public Users findUserByEmail(String username) {
 
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Username Not Found" + username));
     }
-    public void changePassword(Users user, String newPassword) {
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
 
-    public boolean checkIfValidOldPassword(Users user, String oldPassword) {
-        return passwordEncoder.matches(oldPassword, user.getPassword());
-    }
-    public Optional<Users> getUserByPasswordResetToken(String token) {
-        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
-    }
 
 
 

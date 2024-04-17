@@ -4,6 +4,7 @@ package com.example.eatgoodliveproject.repositories;
 import com.example.eatgoodliveproject.dto.ProfileUpdateDto;
 import com.example.eatgoodliveproject.enums.ChatStatus;
 import com.example.eatgoodliveproject.enums.CountryCode;
+import com.example.eatgoodliveproject.enums.Roles;
 import com.example.eatgoodliveproject.model.Address;
 import com.example.eatgoodliveproject.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     void partialUpdate(@Param("id") Long id, @Param("fullName") String fullName, @Param("username") String username, @Param("profilePictureUrl") String profilePictureUrl,  @Param("phoneNumber") String phoneNumber, @Param("addresses")Address addresses, @Param("city") String city, @Param("country") String country);
     Optional<Users> findByUsername(String username);
     boolean existsByUsername(String username);
+    List<Users> findUserByUserRole(Roles role);
 
 }
