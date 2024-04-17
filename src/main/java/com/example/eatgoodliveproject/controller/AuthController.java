@@ -66,98 +66,46 @@ public class AuthController {
         return new ResponseEntity<>("Signup successful, go to your mail to verify your account", HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
-        return userService.loginUser(loginDto);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(Authentication authentication, HttpServletRequest request) {
-        String result = userService.logoutUser(authentication, request);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/resendVerifyToken")
-    public String resendVerificationToken(@RequestParam("token") String oldToken, HttpServletRequest request){
-        VerificationToken verificationToken = userService.generateNewVerificationToken(oldToken);
-        Users user = verificationToken.getUser();
-        resendVerificationTokenMail(user, emailSenderService.applicationUrl(request),verificationToken);
-        return "Verification link has been sent to your email";
-    }
-
-    void resendVerificationTokenMail(Users user, String applicationUrl, VerificationToken verificationToken) {
-        String url = applicationUrl + "/verifyRegistration?token=" + verificationToken.getToken();
-
-        // sendVerificationEmail()
-        log.info("Click the link to verify your account: {}", url);
-    }
-
     @GetMapping("/verifyRegistration")
     public ResponseEntity<String> verifyRegistration(@RequestParam("token") String token){
         String result = userService.validateVerificationToken(token);
         if (result.equalsIgnoreCase("valid")){
             return new ResponseEntity<>( "User Verified Successfully",HttpStatus.OK);
         }
-        return new ResponseEntity<>("Bad User", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("User not verified", HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody PasswordResetEmailDto passwordDto, HttpServletRequest request) throws RuntimeException {
-        Users user = userService.findUserByEmail(passwordDto.getEmail());
-        String url = "";
-        if(user != null){
-            String token =  userService.generateRandomNumber(6);
-            userService.createPasswordResetTokenForUser(user, token);
-            try {
-                url = emailSenderService.forgetPasswordResetTokenMail(user, emailSenderService.applicationUrl(request), token);
-            }catch (Exception e){
-                throw new RuntimeException("Error sending mail");
-            }
-            return new ResponseEntity<>("Go to Email to reset Password " + url, HttpStatus.OK);
-        }
-        throw new RuntimeException("User with email " + passwordDto.getEmail() + "not found");
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+        return userService.loginUser(loginDto);
     }
 
-    @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetEmailDto passwordResetEmailDto, HttpServletRequest request){
-        Users user = userService.findUserByEmail(passwordResetEmailDto.getEmail());
-        String url = "";
-        if (user != null){
-            String token = UUID.randomUUID().toString();
-            userService.createPasswordResetTokenForUser(user, token);
-            url =emailSenderService.passwordResetTokenMail(user.getUsername(), emailSenderService.applicationUrl(request), token);
+//    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(Authentication authentication, HttpServletRequest request) {
+//        String result = userService.logoutUser(authentication, request);
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request){
+        String result = userService.logoutUser(request);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
-        }
-        return new ResponseEntity<>("go to your mail to reset your password" + url, HttpStatus.OK);
+//    @PostMapping("/changePassword")
+//    public ResponseEntity <String> changePassword(@RequestBody ChangePasswordDto passwordDto) {
+//        return new ResponseEntity<>(userService.changeUserPassword(passwordDto), HttpStatus.OK);
+//    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody PasswordResetEmailDto passwordDto, HttpServletRequest request){
+        userService.forgotPassword(passwordDto, request);
+        return new ResponseEntity<>("Forgot password email successfully sent", HttpStatus.OK);
 
     }
 
-
-    @PostMapping("/changePassword")
-    public String changePassword(@RequestBody PasswordDto passwordDto){
-        Users user = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!userService.checkIfValidOldPassword(user, passwordDto.getOldPassword())){
-            return "Invalid Old Password";
-        }
-        userService.changePassword(user, passwordDto.getNewPassword());
-        return "Password Change Successfully";
-    }
-
-
-    @PostMapping("/savePassword")
-    public ResponseEntity<String> savePassword(@RequestParam("token") String token,
-                                               @RequestBody ResetPasswordDto passwordDto){
-        String result = userService.validatePasswordResetToken(token);
-        if (!result.equalsIgnoreCase("valid")){
-            return new ResponseEntity<>("Invalid Token", HttpStatus.NOT_FOUND);
-        }
-        Optional<Users> user = userService.getUserByPasswordResetToken(token);
-        if (user.isPresent()){
-            userService.changePassword(user.get(), passwordDto.getNewPassword());
-            return new ResponseEntity<>("Password Reset Successfully", HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>("Invalid Token", HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<String> resetPassword(@PathVariable String token, @RequestBody ResetPasswordDto passwordDto) {
+        return userService.resetPassword(token, passwordDto);
     }
 
 }

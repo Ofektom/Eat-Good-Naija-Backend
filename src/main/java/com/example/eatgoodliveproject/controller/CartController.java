@@ -1,6 +1,8 @@
 package com.example.eatgoodliveproject.controller;
 
 import com.example.eatgoodliveproject.dto.CartDto;
+import com.example.eatgoodliveproject.dto.CartItemDto;
+import com.example.eatgoodliveproject.dto.CartResponse;
 import com.example.eatgoodliveproject.service.CartService;
 import com.example.eatgoodliveproject.service.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class CartController {
     }
 
     @PostMapping("/adding-to-cart/{userId}/{productId}")
-    public ResponseEntity<String> addToCart(@PathVariable Long userId, @PathVariable Long productId) {
+    public ResponseEntity<CartResponse> addToCart(@PathVariable Long userId, @PathVariable Long productId) {
         return cartService.addToCart(userId, productId);
     }
 
@@ -34,14 +36,14 @@ public class CartController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<CartDto>> getALlCart(){
-        return cartService.getCart();
+    public ResponseEntity<List<CartDto>> getAllCarts(){
+        return cartService.getAllCarts();
     }
 
     @GetMapping("/cart/{cartId}")
-    public ResponseEntity<CartDto> getCart(@PathVariable Long cartId) {
-        CartDto cartItems = cartService.getCartById(cartId);
-        return ResponseEntity.ok(cartItems);
+    public ResponseEntity<CartResponse> getCart(@PathVariable Long cartId) {
+        CartResponse cartResponse = cartService.getCartById(cartId);
+        return ResponseEntity.ok(cartResponse);
 
     }
 

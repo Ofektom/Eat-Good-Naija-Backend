@@ -16,6 +16,8 @@ import java.util.List;
 @Builder
 public class CartDto {
     private Long id;
+    private String user;
+    private List<CartItemDto> cartItems = new ArrayList<>();
+    private BigDecimal tax;
     private BigDecimal totalPrice;
-    private List<ProductDto> products = new ArrayList<>();
 }

@@ -73,8 +73,6 @@ public class Users implements UserDetails {
 
     @JsonIgnore
     private String city;
-
-    @JsonIgnore
     private String country;
 
     @Enumerated(value = EnumType.STRING)
@@ -84,9 +82,10 @@ public class Users implements UserDetails {
     @JsonIgnore
     private List<Orders> orders;
 
-    public Users(String fullName, String username, String phoneNumber, String password, String confirmPassword, boolean enabled, Roles userRole){
+    public Users(String fullName, String username, String country, String phoneNumber, String password, String confirmPassword, boolean enabled, Roles userRole){
         this.fullName = fullName;
         this.username = username;
+        this.country = country;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.confirmPassword = confirmPassword;

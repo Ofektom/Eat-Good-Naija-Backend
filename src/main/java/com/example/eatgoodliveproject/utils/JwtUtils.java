@@ -1,6 +1,7 @@
 package com.example.eatgoodliveproject.utils;
 
 
+import com.example.eatgoodliveproject.model.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -58,7 +59,11 @@ public class JwtUtils {
     public BiFunction<String, String, Boolean> isTokenValid = (token, username) ->
             isTokenExpired.apply(token)&&Objects.equals(extractUsername.apply(token), username);
     public Function<UserDetails, String> createJwt = userDetails -> {
+        Users user = (Users) userDetails;
         Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("role", user.getUserRole().name());
+        claims.put("fullName", user.getFullName());
         return Jwts.builder()
                 .signWith(getKey.get())
                 .claims(claims)
